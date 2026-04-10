@@ -2,41 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Wild West Match-3</title>
 <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cell: min(10.5vw, 54px);
+    --gap: min(1vw, 4px);
+    --emoji: clamp(1.1rem, 5vw, 1.9rem);
+    --board-size: calc(8 * var(--cell) + 7 * var(--gap));
+  }
+
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
 
   body {
     background: #2c1a0e;
     background-image:
       repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.08) 40px, rgba(0,0,0,0.08) 41px),
       repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.08) 40px, rgba(0,0,0,0.08) 41px);
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-family: 'Rye', serif;
     color: #f4e4c1;
+    padding: 12px 8px;
   }
 
   header {
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: clamp(8px, 2vh, 18px);
     text-shadow: 2px 2px 0 #8B4513, 4px 4px 0 #5c2c0a;
   }
 
   header h1 {
-    font-size: 2.4rem;
-    letter-spacing: 4px;
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
+    letter-spacing: clamp(2px, 1vw, 4px);
     color: #FFD700;
   }
 
   header .subtitle {
-    font-size: 0.75rem;
-    letter-spacing: 6px;
+    font-size: clamp(0.55rem, 2vw, 0.75rem);
+    letter-spacing: clamp(3px, 1.5vw, 6px);
     color: #c8a97a;
     margin-top: 4px;
   }
@@ -45,8 +59,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 480px;
-    margin-bottom: 12px;
+    width: min(var(--board-size) + 20px, 96vw);
+    margin-bottom: clamp(6px, 1.5vh, 12px);
     padding: 0 4px;
   }
 
@@ -54,60 +68,67 @@
     background: #5c2c0a;
     border: 3px solid #8B4513;
     border-radius: 6px;
-    padding: 6px 18px;
-    font-size: 1.1rem;
+    padding: clamp(4px, 1vw, 6px) clamp(10px, 3vw, 18px);
+    font-size: clamp(0.85rem, 3.5vw, 1.1rem);
     color: #FFD700;
     text-shadow: 1px 1px 0 #3a1800;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
   }
 
-  .score-box span { font-size: 0.65rem; display: block; color: #c8a97a; letter-spacing: 3px; }
+  .score-box span { font-size: clamp(0.5rem, 1.8vw, 0.65rem); display: block; color: #c8a97a; letter-spacing: 3px; }
 
   .mute-btn {
     background: #5c2c0a;
     border: 3px solid #8B4513;
     border-radius: 6px;
-    padding: 6px 14px;
+    padding: clamp(4px, 1vw, 6px) clamp(8px, 2.5vw, 14px);
     color: #f4e4c1;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 4vw, 1.2rem);
     transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .mute-btn:hover { background: #7a3c14; }
+  .mute-btn:hover, .mute-btn:active { background: #7a3c14; }
 
   .board-wrap {
     background: #4a220a;
-    border: 6px solid #8B4513;
+    border: clamp(3px, 1.5vw, 6px) solid #8B4513;
     border-radius: 10px;
-    padding: 10px;
+    padding: clamp(5px, 1.5vw, 10px);
     box-shadow:
-      0 0 0 3px #5c2c0a,
+      0 0 0 clamp(1px, 0.5vw, 3px) #5c2c0a,
       0 8px 32px rgba(0,0,0,0.7),
       inset 0 2px 8px rgba(0,0,0,0.5);
     position: relative;
+    max-width: 96vw;
   }
 
   #board {
     display: grid;
-    grid-template-columns: repeat(8, 54px);
-    grid-template-rows: repeat(8, 54px);
-    gap: 4px;
+    grid-template-columns: repeat(8, var(--cell));
+    grid-template-rows: repeat(8, var(--cell));
+    gap: var(--gap);
+    touch-action: none;
   }
 
   .cell {
-    width: 54px;
-    height: 54px;
-    border-radius: 8px;
+    width: var(--cell);
+    height: var(--cell);
+    border-radius: clamp(4px, 1.5vw, 8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.9rem;
+    font-size: var(--emoji);
     cursor: pointer;
     user-select: none;
+    -webkit-user-select: none;
     transition: transform 0.12s, filter 0.12s;
     position: relative;
     border: 2px solid rgba(0,0,0,0.25);
     box-shadow: inset 0 2px 4px rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.4);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   .cell:hover { filter: brightness(1.2); transform: scale(1.06); }
@@ -117,30 +138,18 @@
     box-shadow: 0 0 0 3px #FFD700, inset 0 2px 4px rgba(255,255,255,0.2);
     z-index: 2;
   }
-  .cell.matching {
-    animation: pop 0.32s ease-out forwards;
-  }
-  .cell.falling {
-    animation: fall 0.22s ease-in;
-  }
-  .cell.new-tile {
-    animation: drop-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
-  }
+  .cell.matching { animation: pop 0.32s ease-out forwards; }
+  .cell.new-tile  { animation: drop-in 0.25s cubic-bezier(0.34,1.56,0.64,1); }
 
-  /* Tile colors */
-  .t0 { background: linear-gradient(135deg, #e8b84b, #c8860a); } /* gold star */
-  .t1 { background: linear-gradient(135deg, #e8e0d0, #b0a090); } /* skull */
-  .t2 { background: linear-gradient(135deg, #5a9e52, #2e6e27); } /* cactus */
-  .t3 { background: linear-gradient(135deg, #e87a2a, #b04a08); } /* coin */
+  .t0 { background: linear-gradient(135deg, #e8b84b, #c8860a); }
+  .t1 { background: linear-gradient(135deg, #e8e0d0, #b0a090); }
+  .t2 { background: linear-gradient(135deg, #5a9e52, #2e6e27); }
+  .t3 { background: linear-gradient(135deg, #e87a2a, #b04a08); }
 
   @keyframes pop {
-    0%   { transform: scale(1); opacity: 1; }
+    0%   { transform: scale(1);   opacity: 1; }
     50%  { transform: scale(1.3); opacity: 0.7; }
-    100% { transform: scale(0); opacity: 0; }
-  }
-  @keyframes fall {
-    0%   { transform: translateY(-20px); opacity: 0.5; }
-    100% { transform: translateY(0);     opacity: 1;   }
+    100% { transform: scale(0);   opacity: 0; }
   }
   @keyframes drop-in {
     0%   { transform: scale(0.4) translateY(-30px); opacity: 0; }
@@ -149,13 +158,14 @@
 
   .score-popup {
     position: absolute;
-    font-size: 1rem;
+    font-size: clamp(0.7rem, 2.5vw, 1rem);
     color: #FFD700;
     text-shadow: 1px 1px 0 #3a1800;
     pointer-events: none;
     animation: float-up 0.9s ease-out forwards;
     z-index: 10;
     font-family: 'Rye', serif;
+    white-space: nowrap;
   }
   @keyframes float-up {
     0%   { opacity: 1; transform: translateY(0); }
@@ -163,10 +173,17 @@
   }
 
   footer {
-    margin-top: 14px;
-    font-size: 0.6rem;
+    margin-top: clamp(8px, 1.5vh, 14px);
+    font-size: clamp(0.45rem, 1.5vw, 0.6rem);
     letter-spacing: 4px;
     color: #7a5c3a;
+  }
+
+  @media (max-height: 600px) and (orientation: landscape) {
+    :root { --cell: min(9vh, 48px); }
+    header { margin-bottom: 4px; }
+    .hud { margin-bottom: 4px; }
+    footer { display: none; }
   }
 </style>
 </head>
@@ -192,18 +209,15 @@
 <footer>~ ENDLESS FRONTIER ~</footer>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
 const COLS = 8, ROWS = 8, TYPES = 4;
 const TILES = ['🤠','💀','🌵','💰'];
 const TILE_LABEL = ['Sheriff','Skull','Cactus','Coin'];
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let board = [];       // ROWS × COLS array of type indices (0-3)
-let selected = null;  // {r, c} or null
+let board = [];
+let selected = null;
 let score = 0;
-let busy = false;     // lock during animations
+let busy = false;
 
-// ─── AUDIO ───────────────────────────────────────────────────────────────────
 let audioCtx = null;
 let ambientNodes = [];
 let muted = false;
@@ -229,343 +243,221 @@ function playTone(freq, type, duration, vol, delay = 0) {
   osc.stop(ctx.currentTime + delay + duration + 0.05);
 }
 
-function sfxSwap() {
-  playTone(220, 'triangle', 0.12, 0.18);
-  playTone(280, 'triangle', 0.10, 0.12, 0.05);
-}
+function sfxSwap()    { playTone(220,'triangle',0.12,0.18); playTone(280,'triangle',0.10,0.12,0.05); }
+function sfxInvalid() { playTone(160,'sawtooth',0.15,0.12); }
+function sfxMatch(n)  { const b=440; for(let i=0;i<Math.min(n,6);i++) playTone(b*Math.pow(1.12,i),'sine',0.25,0.22,i*0.06); }
+function sfxCascade(l){ playTone(330+l*80,'sine',0.3,0.2); playTone(495+l*80,'sine',0.3,0.15,0.08); }
 
-function sfxInvalid() {
-  playTone(160, 'sawtooth', 0.15, 0.12);
-}
-
-function sfxMatch(count) {
-  const base = 440;
-  for (let i = 0; i < Math.min(count, 6); i++) {
-    playTone(base * Math.pow(1.12, i), 'sine', 0.25, 0.22, i * 0.06);
-  }
-}
-
-function sfxCascade(level) {
-  playTone(330 + level * 80, 'sine', 0.3, 0.2);
-  playTone(495 + level * 80, 'sine', 0.3, 0.15, 0.08);
-}
-
-// Ambient: a slow western drone using stacked oscillators
 function startAmbient() {
   if (muted) return;
   stopAmbient();
   const ctx = getAudioCtx();
-
-  // Drone notes (open tuning feel)
-  const freqs = [82.4, 110, 146.8, 165, 196];
-  freqs.forEach((f, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const lfo  = ctx.createOscillator();
-    const lfoGain = ctx.createGain();
-
-    lfo.frequency.value = 0.12 + i * 0.03;
-    lfoGain.gain.value = 1.5;
-    lfo.connect(lfoGain);
-    lfoGain.connect(osc.frequency);
-
-    osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
-    osc.frequency.value = f;
-    gain.gain.value = 0.028 - i * 0.003;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 400 + i * 60;
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    lfo.start();
-    ambientNodes.push(osc, gain, lfo, lfoGain, filter);
+  [82.4,110,146.8,165,196].forEach((f,i) => {
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    const lfo=ctx.createOscillator(), lfoGain=ctx.createGain();
+    const filter=ctx.createBiquadFilter();
+    lfo.frequency.value=0.12+i*0.03; lfoGain.gain.value=1.5;
+    lfo.connect(lfoGain); lfoGain.connect(osc.frequency);
+    osc.type=i%2===0?'sawtooth':'triangle'; osc.frequency.value=f;
+    gain.gain.value=0.028-i*0.003;
+    filter.type='lowpass'; filter.frequency.value=400+i*60;
+    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    osc.start(); lfo.start();
+    ambientNodes.push(osc,gain,lfo,lfoGain,filter);
   });
-
-  // Occasional pluck simulation
   schedulePluck();
 }
 
 function schedulePluck() {
   if (muted) return;
-  const delay = 3000 + Math.random() * 5000;
   setTimeout(() => {
     if (!muted) {
-      const notes = [196, 220, 246.9, 261.6, 293.7, 329.6];
-      const n = notes[Math.floor(Math.random() * notes.length)];
-      playTone(n, 'triangle', 0.8, 0.09);
-      playTone(n * 2, 'sine', 0.5, 0.04, 0.01);
+      const notes=[196,220,246.9,261.6,293.7,329.6];
+      const n=notes[Math.floor(Math.random()*notes.length)];
+      playTone(n,'triangle',0.8,0.09); playTone(n*2,'sine',0.5,0.04,0.01);
     }
     schedulePluck();
-  }, delay);
+  }, 3000+Math.random()*5000);
 }
 
 function stopAmbient() {
-  ambientNodes.forEach(n => { try { n.stop ? n.stop() : n.disconnect(); n.disconnect(); } catch(e){} });
+  ambientNodes.forEach(n => { try { n.stop?n.stop():n.disconnect(); n.disconnect(); } catch(e){} });
   ambientNodes = [];
 }
 
 document.getElementById('mute-btn').addEventListener('click', () => {
   muted = !muted;
   document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
-  if (muted) stopAmbient();
-  else startAmbient();
+  if (muted) stopAmbient(); else startAmbient();
 });
 
-// ─── BOARD INIT ──────────────────────────────────────────────────────────────
-function randomType() { return Math.floor(Math.random() * TYPES); }
+function randomType() { return Math.floor(Math.random()*TYPES); }
 
 function initBoard() {
   do {
     board = [];
-    for (let r = 0; r < ROWS; r++) {
-      board[r] = [];
-      for (let c = 0; c < COLS; c++) {
-        // Avoid starting matches
+    for (let r=0;r<ROWS;r++) {
+      board[r]=[];
+      for (let c=0;c<COLS;c++) {
         let t;
-        do {
-          t = randomType();
-        } while (
-          (c >= 2 && board[r][c-1] === t && board[r][c-2] === t) ||
-          (r >= 2 && board[r-1][c] === t && board[r-2][c] === t)
-        );
-        board[r][c] = t;
+        do { t=randomType(); }
+        while ((c>=2&&board[r][c-1]===t&&board[r][c-2]===t)||(r>=2&&board[r-1][c]===t&&board[r-2][c]===t));
+        board[r][c]=t;
       }
     }
-  } while (findMatches().length > 0 || !hasAnyMove());
+  } while (findMatches().length>0 || !hasAnyMove());
 }
 
-// ─── MATCH FINDING ───────────────────────────────────────────────────────────
 function findMatches() {
-  const matched = new Set();
-
-  // Horizontal
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS - 2; c++) {
-      const t = board[r][c];
-      if (t === board[r][c+1] && t === board[r][c+2]) {
-        let len = 3;
-        while (c + len < COLS && board[r][c+len] === t) len++;
-        for (let i = 0; i < len; i++) matched.add(`${r},${c+i}`);
-      }
+  const matched=new Set();
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS-2;c++) {
+    const t=board[r][c];
+    if(t===board[r][c+1]&&t===board[r][c+2]) {
+      let len=3; while(c+len<COLS&&board[r][c+len]===t)len++;
+      for(let i=0;i<len;i++) matched.add(`${r},${c+i}`);
     }
   }
-
-  // Vertical
-  for (let c = 0; c < COLS; c++) {
-    for (let r = 0; r < ROWS - 2; r++) {
-      const t = board[r][c];
-      if (t === board[r+1][c] && t === board[r+2][c]) {
-        let len = 3;
-        while (r + len < ROWS && board[r+len][c] === t) len++;
-        for (let i = 0; i < len; i++) matched.add(`${r+i},${c}`);
-      }
+  for(let c=0;c<COLS;c++) for(let r=0;r<ROWS-2;r++) {
+    const t=board[r][c];
+    if(t===board[r+1][c]&&t===board[r+2][c]) {
+      let len=3; while(r+len<ROWS&&board[r+len][c]===t)len++;
+      for(let i=0;i<len;i++) matched.add(`${r+i},${c}`);
     }
   }
-
-  return [...matched].map(k => {
-    const [r, c] = k.split(',').map(Number);
-    return {r, c};
-  });
+  return [...matched].map(k=>{ const [r,c]=k.split(',').map(Number); return{r,c}; });
 }
 
-// ─── POSSIBLE MOVES CHECK ────────────────────────────────────────────────────
 function hasAnyMove() {
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (c < COLS - 1 && wouldMatch(r, c, r, c+1)) return true;
-      if (r < ROWS - 1 && wouldMatch(r, c, r+1, c)) return true;
-    }
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    if(c<COLS-1&&wouldMatch(r,c,r,c+1)) return true;
+    if(r<ROWS-1&&wouldMatch(r,c,r+1,c)) return true;
   }
   return false;
 }
 
-function wouldMatch(r1, c1, r2, c2) {
-  // Temporarily swap
-  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
-  const matches = findMatches();
-  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
-  return matches.length > 0;
+function wouldMatch(r1,c1,r2,c2) {
+  [board[r1][c1],board[r2][c2]]=[board[r2][c2],board[r1][c1]];
+  const m=findMatches();
+  [board[r1][c1],board[r2][c2]]=[board[r2][c2],board[r1][c1]];
+  return m.length>0;
 }
 
-// ─── RENDERING ───────────────────────────────────────────────────────────────
-function renderBoard(animClass = null, animCells = []) {
-  const boardEl = document.getElementById('board');
-  boardEl.innerHTML = '';
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const cell = document.createElement('div');
-      const t = board[r][c];
-      cell.className = `cell t${t}`;
-      if (animClass && animCells.some(a => a.r === r && a.c === c)) {
-        cell.classList.add(animClass);
-      }
-      if (selected && selected.r === r && selected.c === c) {
-        cell.classList.add('selected');
-      }
-      cell.textContent = TILES[t];
-      cell.title = TILE_LABEL[t];
-      cell.dataset.r = r;
-      cell.dataset.c = c;
-      cell.addEventListener('click', onCellClick);
-      boardEl.appendChild(cell);
-    }
+function renderBoard(animClass=null, animCells=[]) {
+  const boardEl=document.getElementById('board');
+  boardEl.innerHTML='';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    const cell=document.createElement('div');
+    const t=board[r][c];
+    cell.className=`cell t${t}`;
+    if(animClass&&animCells.some(a=>a.r===r&&a.c===c)) cell.classList.add(animClass);
+    if(selected&&selected.r===r&&selected.c===c) cell.classList.add('selected');
+    cell.textContent=TILES[t];
+    cell.title=TILE_LABEL[t];
+    cell.dataset.r=r; cell.dataset.c=c;
+    cell.addEventListener('click', onCellClick);
+    cell.addEventListener('touchend', onTouchEnd, {passive:false});
+    boardEl.appendChild(cell);
   }
 }
 
-function getCellEl(r, c) {
-  return document.querySelector(`#board .cell[data-r="${r}"][data-c="${c}"]`);
-}
+function getCellEl(r,c) { return document.querySelector(`#board .cell[data-r="${r}"][data-c="${c}"]`); }
 
-// ─── SCORE ───────────────────────────────────────────────────────────────────
-function addScore(n, r, c) {
-  score += n * 10;
-  document.getElementById('score-val').textContent = score;
-
-  // Floating score popup
-  const boardWrap = document.querySelector('.board-wrap');
-  const cellEl = getCellEl(r, c);
-  if (cellEl) {
-    const popup = document.createElement('div');
-    popup.className = 'score-popup';
-    popup.textContent = `+${n * 10}`;
-    const rect = cellEl.getBoundingClientRect();
-    const wrapRect = boardWrap.getBoundingClientRect();
-    popup.style.left = (rect.left - wrapRect.left + 10) + 'px';
-    popup.style.top  = (rect.top  - wrapRect.top  - 10) + 'px';
+function addScore(n,r,c) {
+  score+=n*10;
+  document.getElementById('score-val').textContent=score;
+  const boardWrap=document.querySelector('.board-wrap');
+  const cellEl=getCellEl(r,c);
+  if(cellEl) {
+    const popup=document.createElement('div');
+    popup.className='score-popup';
+    popup.textContent=`+${n*10}`;
+    const rect=cellEl.getBoundingClientRect();
+    const wrapRect=boardWrap.getBoundingClientRect();
+    popup.style.left=(rect.left-wrapRect.left+10)+'px';
+    popup.style.top=(rect.top-wrapRect.top-10)+'px';
     boardWrap.appendChild(popup);
-    setTimeout(() => popup.remove(), 950);
+    setTimeout(()=>popup.remove(),950);
   }
 }
 
-// ─── GAME LOGIC ──────────────────────────────────────────────────────────────
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
-async function processMatches(cascadeLevel = 0) {
-  const matches = findMatches();
-  if (matches.length === 0) return;
-
-  // Animate pop
-  renderBoard('matching', matches);
+async function processMatches(cascadeLevel=0) {
+  const matches=findMatches();
+  if(matches.length===0) return;
+  renderBoard('matching',matches);
   sfxMatch(matches.length);
-  if (cascadeLevel > 0) sfxCascade(cascadeLevel);
+  if(cascadeLevel>0) sfxCascade(cascadeLevel);
   await sleep(340);
-
-  // Remove matched tiles
-  matches.forEach(({r, c}) => { board[r][c] = -1; });
-  // Score popup at center of matched group
-  const cr = matches[Math.floor(matches.length/2)];
-  addScore(matches.length, cr.r, cr.c);
-
-  // Gravity: drop tiles down
-  for (let c = 0; c < COLS; c++) {
-    let writeRow = ROWS - 1;
-    for (let r = ROWS - 1; r >= 0; r--) {
-      if (board[r][c] !== -1) {
-        board[writeRow][c] = board[r][c];
-        if (writeRow !== r) board[r][c] = -1;
-        writeRow--;
-      }
+  matches.forEach(({r,c})=>{ board[r][c]=-1; });
+  const cr=matches[Math.floor(matches.length/2)];
+  addScore(matches.length,cr.r,cr.c);
+  for(let c=0;c<COLS;c++) {
+    let writeRow=ROWS-1;
+    for(let r=ROWS-1;r>=0;r--) {
+      if(board[r][c]!==-1){ board[writeRow][c]=board[r][c]; if(writeRow!==r) board[r][c]=-1; writeRow--; }
     }
-    // Fill from top
-    for (let r = writeRow; r >= 0; r--) {
-      board[r][c] = randomType();
-    }
+    for(let r=writeRow;r>=0;r--) board[r][c]=randomType();
   }
-
-  renderBoard('new-tile', []);
+  renderBoard('new-tile',[]);
   await sleep(270);
-
-  // Cascade
-  await processMatches(cascadeLevel + 1);
+  await processMatches(cascadeLevel+1);
 }
 
-async function trySwap(r1, c1, r2, c2) {
-  if (busy) return;
-  busy = true;
-
-  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+async function trySwap(r1,c1,r2,c2) {
+  if(busy) return;
+  busy=true;
+  [board[r1][c1],board[r2][c2]]=[board[r2][c2],board[r1][c1]];
   sfxSwap();
   renderBoard();
   await sleep(160);
-
-  const matches = findMatches();
-  if (matches.length === 0) {
-    // Snap back
-    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+  if(findMatches().length===0) {
+    [board[r1][c1],board[r2][c2]]=[board[r2][c2],board[r1][c1]];
     sfxInvalid();
     renderBoard();
     await sleep(120);
   } else {
     await processMatches(0);
-
-    // Check for no moves — reshuffle
-    if (!hasAnyMove()) {
-      await reshuffleBoard();
-    }
+    if(!hasAnyMove()) await reshuffleBoard();
   }
-
-  busy = false;
+  busy=false;
 }
 
 async function reshuffleBoard() {
-  // Visual cue
-  const allCells = [];
-  for (let r = 0; r < ROWS; r++)
-    for (let c = 0; c < COLS; c++)
-      allCells.push({r, c});
-
-  renderBoard('matching', allCells);
+  const allCells=[];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) allCells.push({r,c});
+  renderBoard('matching',allCells);
   await sleep(400);
   initBoard();
-  renderBoard('new-tile', allCells);
+  renderBoard('new-tile',allCells);
   await sleep(300);
 }
 
-// ─── INPUT ───────────────────────────────────────────────────────────────────
-function isAdjacent(r1, c1, r2, c2) {
-  return (Math.abs(r1-r2) + Math.abs(c1-c2)) === 1;
+function isAdjacent(r1,c1,r2,c2) { return (Math.abs(r1-r2)+Math.abs(c1-c2))===1; }
+
+function handleSelect(r, c) {
+  if(busy) return;
+  if(!selected) { selected={r,c}; renderBoard(); return; }
+  if(selected.r===r&&selected.c===c) { selected=null; renderBoard(); return; }
+  if(isAdjacent(selected.r,selected.c,r,c)) {
+    const{r:sr,c:sc}=selected; selected=null; trySwap(sr,sc,r,c);
+  } else { selected={r,c}; renderBoard(); }
 }
 
 function onCellClick(e) {
-  if (busy) return;
-  const r = parseInt(e.currentTarget.dataset.r);
-  const c = parseInt(e.currentTarget.dataset.c);
-
-  if (!selected) {
-    selected = {r, c};
-    renderBoard();
-    return;
-  }
-
-  if (selected.r === r && selected.c === c) {
-    selected = null;
-    renderBoard();
-    return;
-  }
-
-  if (isAdjacent(selected.r, selected.c, r, c)) {
-    const {r: sr, c: sc} = selected;
-    selected = null;
-    trySwap(sr, sc, r, c);
-  } else {
-    selected = {r, c};
-    renderBoard();
-  }
+  handleSelect(parseInt(e.currentTarget.dataset.r), parseInt(e.currentTarget.dataset.c));
 }
 
-// ─── BOOT ────────────────────────────────────────────────────────────────────
+function onTouchEnd(e) {
+  e.preventDefault();
+  handleSelect(parseInt(e.currentTarget.dataset.r), parseInt(e.currentTarget.dataset.c));
+}
+
 initBoard();
 renderBoard();
 
-// Start ambient on first interaction (browser autoplay policy)
-document.addEventListener('click', () => {
-  if (!audioCtx) startAmbient();
-}, { once: true });
+document.addEventListener('click', () => { if(!audioCtx) startAmbient(); }, {once:true});
+document.addEventListener('touchstart', () => { if(!audioCtx) startAmbient(); }, {once:true, passive:true});
 </script>
 </body>
 </html>
