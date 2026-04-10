@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Wild West Match-3</title>
 <link href="https://fonts.googleapis.com/css2?family=Rye&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cell: min(10.5vw, 54px);
-    --gap: min(1vw, 4px);
-    --emoji: clamp(1.1rem, 5vw, 1.9rem);
+    --cell: 42px;
+    --gap: 3px;
+    --emoji: 1.4rem;
     --board-size: calc(8 * var(--cell) + 7 * var(--gap));
   }
 
   html, body {
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
     touch-action: manipulation;
   }
 
@@ -26,42 +26,49 @@
     background-image:
       repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.08) 40px, rgba(0,0,0,0.08) 41px),
       repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.08) 40px, rgba(0,0,0,0.08) 41px);
-    min-height: 100dvh;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-family: 'Rye', serif;
     color: #f4e4c1;
-    padding: 12px 8px;
+    padding: max(clamp(4px, 1.5vh, 12px), env(safe-area-inset-top))
+             max(8px, env(safe-area-inset-right))
+             max(clamp(4px, 1.5vh, 12px), env(safe-area-inset-bottom))
+             max(8px, env(safe-area-inset-left));
   }
 
   header {
     text-align: center;
-    margin-bottom: clamp(8px, 2vh, 18px);
+    margin-bottom: clamp(4px, 1.5vh, 14px);
     text-shadow: 2px 2px 0 #8B4513, 4px 4px 0 #5c2c0a;
+    flex-shrink: 0;
   }
 
   header h1 {
-    font-size: clamp(1.4rem, 6vw, 2.4rem);
+    font-size: clamp(1.1rem, 5vw, 2.4rem);
     letter-spacing: clamp(2px, 1vw, 4px);
     color: #FFD700;
   }
 
   header .subtitle {
-    font-size: clamp(0.55rem, 2vw, 0.75rem);
+    font-size: clamp(0.5rem, 1.8vw, 0.75rem);
     letter-spacing: clamp(3px, 1.5vw, 6px);
     color: #c8a97a;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   .hud {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: min(var(--board-size) + 20px, 96vw);
-    margin-bottom: clamp(6px, 1.5vh, 12px);
+    width: min(calc(var(--board-size) + 20px), 96vw);
+    margin-bottom: clamp(4px, 1.2vh, 10px);
     padding: 0 4px;
+    flex-shrink: 0;
   }
 
   .score-box {
@@ -173,16 +180,16 @@
   }
 
   footer {
-    margin-top: clamp(8px, 1.5vh, 14px);
-    font-size: clamp(0.45rem, 1.5vw, 0.6rem);
+    margin-top: clamp(4px, 1vh, 12px);
+    font-size: clamp(0.4rem, 1.4vw, 0.6rem);
     letter-spacing: 4px;
     color: #7a5c3a;
+    flex-shrink: 0;
   }
 
-  @media (max-height: 600px) and (orientation: landscape) {
-    :root { --cell: min(9vh, 48px); }
-    header { margin-bottom: 4px; }
-    .hud { margin-bottom: 4px; }
+  @media (max-height: 500px) {
+    header h1 { font-size: clamp(0.9rem, 4vw, 1.4rem); }
+    header .subtitle { display: none; }
     footer { display: none; }
   }
 </style>
@@ -452,6 +459,53 @@ function onTouchEnd(e) {
   e.preventDefault();
   handleSelect(parseInt(e.currentTarget.dataset.r), parseInt(e.currentTarget.dataset.c));
 }
+
+let resizeTimer;
+function setCellSize() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const bs = getComputedStyle(document.body);
+  const bPadH = parseFloat(bs.paddingLeft) + parseFloat(bs.paddingRight);
+  const bPadV = parseFloat(bs.paddingTop) + parseFloat(bs.paddingBottom);
+
+  function outerH(el) {
+    if (!el) return 0;
+    const s = getComputedStyle(el);
+    if (s.display === 'none') return 0;
+    return el.offsetHeight + parseFloat(s.marginTop) + parseFloat(s.marginBottom);
+  }
+
+  // board-wrap border + padding (both sides), computed from vw
+  const bwBorder = Math.min(vw * 0.015, 6) * 2;
+  const bwPad    = Math.min(vw * 0.015, 10) * 2;
+  const boardChrome = bwBorder + bwPad;
+
+  const headerH = outerH(document.querySelector('header'));
+  const hudH    = outerH(document.querySelector('.hud'));
+  const footerH = outerH(document.querySelector('footer'));
+
+  const availW = vw - bPadH - boardChrome;
+  const availH = vh - bPadV - headerH - hudH - footerH - boardChrome;
+
+  const cell  = Math.max(26, Math.min(availW / 8, availH / 8, 56));
+  const gap   = Math.max(2, Math.min(Math.round(vw * 0.01), 4));
+  const emoji = Math.max(14, cell * 0.54);
+
+  const root = document.documentElement;
+  root.style.setProperty('--cell', cell + 'px');
+  root.style.setProperty('--gap', gap + 'px');
+  root.style.setProperty('--emoji', emoji + 'px');
+  root.style.setProperty('--board-size', (8 * cell + 7 * gap) + 'px');
+}
+
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(setCellSize, 80);
+});
+window.addEventListener('orientationchange', () => setTimeout(setCellSize, 250));
+
+setCellSize();
+document.fonts.ready.then(setCellSize);
 
 initBoard();
 renderBoard();
