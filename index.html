@@ -138,10 +138,10 @@
   .mute-btn:hover, .mute-btn:active { color: var(--green-d); border-color: var(--green-lo); }
 
   .board-wrap {
-    background: rgba(0,14,6,0.55);
+    background: #040704;
     border: 1px solid var(--border);
     padding: clamp(5px, 1.4vw, 9px);
-    box-shadow: 0 0 32px rgba(0,255,136,0.04), inset 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 40px rgba(0,255,136,0.06), inset 0 0 20px rgba(0,0,0,0.8);
     position: relative;
     max-width: 96vw;
   }
@@ -157,36 +157,53 @@
   .cell {
     width: var(--cell);
     height: var(--cell);
-    border-radius: 3px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--cell) * 0.44);
+    font-size: calc(var(--cell) * 0.54);
     line-height: 1;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    transition: transform 0.13s ease-out, box-shadow 0.13s;
+    transition: transform 0.13s ease-out, box-shadow 0.13s, filter 0.13s;
     position: relative;
-    border: 1px solid var(--border);
-    background: var(--surface);
+    border: 2px solid rgba(0,0,0,0.35);
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  .cell:hover   { transform: scale(1.07); }
-  .cell.selected { transform: scale(1.1); z-index: 2; }
+  .cell:hover    { transform: scale(1.08); filter: brightness(1.15); }
+  .cell.selected { transform: scale(1.12); filter: brightness(1.25); z-index: 2; }
   .cell.matching { animation: cell-pop 0.34s ease-out forwards; }
   .cell.new-tile  { animation: cell-in  0.26s ease-out; }
 
-  .t0 { color: var(--green);  border-color: rgba(0,255,136,0.2);  text-shadow: 0 0 10px rgba(0,255,136,0.75);  box-shadow: inset 0 0 10px rgba(0,255,136,0.06); }
-  .t1 { color: var(--amber);  border-color: rgba(255,204,0,0.2);   text-shadow: 0 0 10px rgba(255,204,0,0.75);   box-shadow: inset 0 0 10px rgba(255,204,0,0.06); }
-  .t2 { color: var(--red);    border-color: rgba(255,68,102,0.2);  text-shadow: 0 0 10px rgba(255,68,102,0.75);  box-shadow: inset 0 0 10px rgba(255,68,102,0.06); }
-  .t3 { color: var(--blue);   border-color: rgba(68,170,255,0.2);  text-shadow: 0 0 10px rgba(68,170,255,0.75);  box-shadow: inset 0 0 10px rgba(68,170,255,0.06); }
+  .t0 {
+    background: linear-gradient(145deg, #00ee77, #009944);
+    border-color: rgba(0,180,80,0.5);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.25), 0 3px 10px rgba(0,220,100,0.3);
+  }
+  .t1 {
+    background: linear-gradient(145deg, #ffd533, #c87800);
+    border-color: rgba(200,140,0,0.5);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.25), 0 3px 10px rgba(255,190,0,0.3);
+  }
+  .t2 {
+    background: linear-gradient(145deg, #ff3366, #bb1033);
+    border-color: rgba(180,20,50,0.5);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), 0 3px 10px rgba(255,40,80,0.3);
+  }
+  .t3 {
+    background: linear-gradient(145deg, #33aaff, #0055cc);
+    border-color: rgba(20,90,200,0.5);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.25), 0 3px 10px rgba(50,150,255,0.3);
+  }
 
-  .cell.selected.t0 { border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.7), inset 0 0 8px rgba(0,255,136,0.12); text-shadow: 0 0 18px rgba(0,255,136,1); }
-  .cell.selected.t1 { border-color: var(--amber); box-shadow: 0 0 12px rgba(255,204,0,0.7),  inset 0 0 8px rgba(255,204,0,0.12);  text-shadow: 0 0 18px rgba(255,204,0,1); }
-  .cell.selected.t2 { border-color: var(--red);   box-shadow: 0 0 12px rgba(255,68,102,0.7), inset 0 0 8px rgba(255,68,102,0.12); text-shadow: 0 0 18px rgba(255,68,102,1); }
-  .cell.selected.t3 { border-color: var(--blue);  box-shadow: 0 0 12px rgba(68,170,255,0.7), inset 0 0 8px rgba(68,170,255,0.12); text-shadow: 0 0 18px rgba(68,170,255,1); }
+  .cell.selected.t0 { border-color: #00ff88; box-shadow: 0 0 16px rgba(0,255,136,0.9), inset 0 2px 5px rgba(255,255,255,0.25); }
+  .cell.selected.t1 { border-color: #ffdd00; box-shadow: 0 0 16px rgba(255,220,0,0.9),  inset 0 2px 5px rgba(255,255,255,0.25); }
+  .cell.selected.t2 { border-color: #ff4477; box-shadow: 0 0 16px rgba(255,60,110,0.9), inset 0 2px 5px rgba(255,255,255,0.2); }
+  .cell.selected.t3 { border-color: #44aaff; box-shadow: 0 0 16px rgba(60,160,255,0.9), inset 0 2px 5px rgba(255,255,255,0.25); }
 
   @keyframes cell-pop {
     0%   { transform: scale(1);   opacity: 1; filter: brightness(1); }
@@ -289,8 +306,8 @@
 
 <script>
 const COLS = 8, ROWS = 8, TYPES = 4;
-const TILES = ['■','◆','▲','●'];
-const TILE_LABEL = ['Green','Amber','Red','Blue'];
+const TILES = ['👾','💀','🔥','💎'];
+const TILE_LABEL = ['Alien','Skull','Fire','Gem'];
 
 let board = [];
 let selected = null;
@@ -588,7 +605,7 @@ function setCellSize() {
   const availW = vw - bPadH - bwPadH;
   const availH = vh - bPadV - headerH - hudH - bwPadV;
 
-  const gap  = Math.max(2, Math.min(Math.round(vw * 0.01), 4));
+  const gap  = Math.max(3, Math.min(Math.round(vw * 0.013), 5));
   const cell = Math.max(26, Math.min((availW - 7 * gap) / 8, (availH - 7 * gap) / 8, 54));
 
   const root = document.documentElement;
