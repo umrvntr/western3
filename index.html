@@ -277,6 +277,42 @@
 
   footer { display: none; }
   @media (max-height: 500px) { header { display: none; } }
+
+  /* ── MATRIX THEME ── */
+  body.matrix { background: #000400; }
+
+  body.matrix .t0,
+  body.matrix .t1,
+  body.matrix .t2,
+  body.matrix .t3 {
+    background: #020a04;
+    border: 2px solid #00aa44;
+    box-shadow: 0 0 6px rgba(0,200,80,0.35), inset 0 0 8px rgba(0,180,70,0.07);
+    color: #00ff88;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: calc(var(--cell) * 0.52);
+    font-weight: bold;
+    text-shadow: 0 0 14px rgba(0,255,136,0.9);
+    border-radius: 2px;
+  }
+  body.matrix .cell.selected.t0,
+  body.matrix .cell.selected.t1,
+  body.matrix .cell.selected.t2,
+  body.matrix .cell.selected.t3 {
+    border-color: #00ff88;
+    box-shadow: 0 0 18px rgba(0,255,136,0.85), inset 0 0 10px rgba(0,255,136,0.1);
+    background: #041208;
+  }
+  body.matrix .board-wrap {
+    background: #000400;
+    box-shadow: 0 0 40px rgba(0,255,136,0.08), inset 0 0 20px rgba(0,0,0,0.9);
+    border-color: #003318;
+  }
+  body.matrix .score-box span:last-child { color: #00ff88; text-shadow: 0 0 14px rgba(0,255,136,0.7); }
+  body.matrix #combo-box span:last-child { color: #00cc66; text-shadow: 0 0 10px rgba(0,200,100,0.6); }
+  body.matrix .score-popup { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.8); }
+  body.matrix .combo-word { color: #00ff88; text-shadow: 0 0 28px rgba(0,255,136,1); font-family: 'Courier New', Courier, monospace; }
+  body.matrix #mode-btn { color: #00cc66; border-color: #003318; }
 </style>
 </head>
 <body>
@@ -294,6 +330,7 @@
     <span>MAX COMBO</span>
     <span id="combo-val">x1</span>
   </div>
+  <button class="mute-btn" id="mode-btn" title="Toggle theme">[clr]</button>
   <button class="mute-btn" id="mute-btn" title="Toggle sound">[sfx:on]</button>
 </div>
 
@@ -305,7 +342,10 @@
 
 <script>
 const COLS = 8, ROWS = 8, TYPES = 4;
-const TILES = ['👾','💀','🔥','💎'];
+const TILES_COLOR  = ['👾','💀','🔥','💎'];
+const TILES_MATRIX = ['1','2','3','4'];
+let matrixMode = false;
+let TILES = TILES_COLOR;
 const TILE_LABEL = ['Alien','Skull','Fire','Gem'];
 
 let board = [];
@@ -385,6 +425,14 @@ document.getElementById('mute-btn').addEventListener('click', () => {
   muted = !muted;
   document.getElementById('mute-btn').textContent = muted ? '[sfx:off]' : '[sfx:on]';
   if (muted) stopAmbient(); else startAmbient();
+});
+
+document.getElementById('mode-btn').addEventListener('click', () => {
+  matrixMode = !matrixMode;
+  TILES = matrixMode ? TILES_MATRIX : TILES_COLOR;
+  document.getElementById('mode-btn').textContent = matrixMode ? '[mtx]' : '[clr]';
+  document.body.classList.toggle('matrix', matrixMode);
+  renderBoard();
 });
 
 function randomType() { return Math.floor(Math.random()*TYPES); }
